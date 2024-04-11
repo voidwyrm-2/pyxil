@@ -539,10 +539,10 @@ while game_running:
             #elif event.key == pygame.K_g and not candrawlinegrid: candrawlinegrid = True
 
             match event.key:
-                case pygame.K_1: currenttool = Tools.PENCIL; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
-                case pygame.K_2: currenttool = Tools.BUCKET; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
-                case pygame.K_3: currenttool = Tools.LINE; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
-                case pygame.K_4: currenttool = Tools.SHAPETOOL; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+                case pygame.K_1: currenttool = Tools.PENCIL#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+                case pygame.K_2: currenttool = Tools.BUCKET#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+                case pygame.K_3: currenttool = Tools.LINE#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+                case pygame.K_4: currenttool = Tools.SHAPETOOL#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
 
             if event.key == pygame.K_g and candrawcheckergrid: candrawcheckergrid = False
             elif event.key == pygame.K_g and not candrawcheckergrid: candrawcheckergrid = True
