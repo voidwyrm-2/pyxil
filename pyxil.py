@@ -317,7 +317,7 @@ pixelstart = [0, 0]
 
 
 canvas = {y: {x: (0, 0, 0) for x in range(canvassize[0])} for y in range(canvassize[1])} #{y: {x: (0, 0, 0) for x in range(screenxy[0] // pixelscale)} for y in range(screenxy[1] // pixelscale)}
-print(len(canvas), len(canvas[0]))
+#print(len(canvas), len(canvas[0]))
 
 
 def drawcursor(): pygame.draw.rect(screen, (255, 255, 255), ((pixindex[1] * pixelscale) + pixelstart[0], (pixindex[0] * pixelscale) + pixelstart[1], pixelscale, pixelscale), 1)
