@@ -1,5 +1,13 @@
 # Pyxil
-A pixel art program made with Pygame
+A pixel art program made with Pygame<br>
+Inspired by [picoCAD](https://johanpeitz.itch.io/picocad), [Px Editor](https://dafluffypotato.itch.io/px-editor), and [Aseprite](https://www.aseprite.org)
+
+# Features
+* Simple to use interface(barely)
+* Free(although Px Editor is also free and it's actually well made)
+* Open-source, and free to change and edit(refer to Licensing below for more information)
+* better than Aseprite(not really, that's a joke; if you want an ACTUAL art editor of the pixel kind that's high quality, go with Aseprite)
+* Actively supported by me because passion go brrrrrr(can't wait for that to stop)
 
 ## Controls
 Refer to [the controls](./controls.md)
@@ -29,9 +37,11 @@ I don't want to code a complex color system, so it will stay that way
 If you have any problems with Pixil, leave a issue<br>
 If you want a video explaination, refer to [this video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
+the PICO-8 palette does not belong to me, it belongs to PICO-8 and whoever made it
+
 
 ## Licensing
-This repository is licensed under the Apache 2.0 license
+This repository is licensed under the Apache 2.0 license([file](./LICENSE))
 <!--td;tr of the license:
 * -->
 
