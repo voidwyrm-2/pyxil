@@ -309,7 +309,7 @@ def showtext(x, y):
 
 icolor = [0, 0]
 
-ccolor = currentpalette[icolor[1]][icolor[0]]
+#ccolor = currentpalette[icolor[1]][icolor[0]]
 
 pixindex = [0, 0]
 
@@ -378,8 +378,8 @@ def drawrgbhitbox():
     pygame.draw.rect(screen, (0, 255, 255), (94, 10, 38, 20))
 
 def showrgb(x, y, color):
-    for c in range(len(ccolor)):
-        rgb = mainfont.render(str(ccolor[c]), False, color)
+    for c in range(len(currentpalette[icolor[1]][icolor[0]])):
+        rgb = mainfont.render(str(currentpalette[icolor[1]][icolor[0]][c]), False, color)
         screen.blit(rgb, (x + (45 * c), y))
         if icolor == c:
             cursor = mainfont.render('^', False, color)
@@ -387,7 +387,7 @@ def showrgb(x, y, color):
 
 
 def showcolor(x, y):
-    pygame.draw.rect(screen, ccolor, (x, y, 50, 20))
+    pygame.draw.rect(screen, currentpalette[icolor[1]][icolor[0]], (x, y, 50, 20))
 
 
 def drawborderLs():
@@ -483,7 +483,8 @@ def saveas():
 
 game_running = True
 while game_running:
-    if ccolor != currentpalette[icolor[1]][icolor[0]]: ccolor = currentpalette[icolor[1]][icolor[0]]
+    icolor[0] = clamp(icolor[0], 0, len(currentpalette[icolor[1]]) - 1)
+    icolor[1] = clamp(icolor[1], 0, len(currentpalette) - 1)
     screen.fill((0, 0, 0))
     if can_use_left > 0: can_use_left -= 1
     if can_use_middle > 0: can_use_middle -= 1
@@ -557,16 +558,16 @@ while game_running:
             '''
             
             if event.key == pygame.K_RIGHT:
-                if icolor[0] < len(currentpalette[icolor[1]]) - 1: icolor[0] += 1; cp_timer = 30
+                icolor[0] = clamp(icolor[0] + 1, 0, len(currentpalette[icolor[1]]) - 1); cp_timer = 30
                 
             if event.key == pygame.K_LEFT:
-                if icolor[0] > 0: icolor[0] -= 1; cp_timer = 30
+                icolor[0] = clamp(icolor[0] - 1, 0, len(currentpalette[icolor[1]]) - 1); cp_timer = 30
             
             if event.key == pygame.K_UP:
-                if icolor[1] > 0: icolor[1] -= 1; cp_timer = 30
+                icolor[1] = clamp(icolor[1] - 1, 0, len(currentpalette) - 1); cp_timer = 30
 
             if event.key == pygame.K_DOWN:
-                if icolor[1] < len(currentpalette[icolor[1]]) - 1: icolor[1] += 1; cp_timer = 30
+                icolor[1] = clamp(icolor[1] + 1, 0, len(currentpalette) - 1); cp_timer = 30
         
             if event.key == pygame.K_w and not mousemode:
                 if pixindex[0] > 0: pixindex[0] -= 1
@@ -581,10 +582,10 @@ while game_running:
                 if pixindex[1] < len(canvas[0]): pixindex[1] += 1
             
             if event.key == pygame.K_SPACE and not mousemode:
-                canvas[pixindex[0]][pixindex[1]] = tuple(ccolor)
+                canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
             
             if event.key == pygame.K_q and not mousemode:
-                ccolor = colorpick(canvas[pixindex[0]][pixindex[1]])
+                icolor = colorpick(canvas[pixindex[0]][pixindex[1]])
             
             if event.key == pygame.K_BACKSPACE and not mousemode:
                 canvas[pixindex[0]][pixindex[1]] = (0, 0, 0)
@@ -618,7 +619,7 @@ while game_running:
     m_left, m_middle, m_right = pygame.mouse.get_pressed()
 
     if m_left and mousemode and can_use_left == 0:
-        canvas[pixindex[0]][pixindex[1]] = tuple(ccolor)
+        canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
         can_use_left = 2
     
     if m_right and mousemode and can_use_right == 0:
