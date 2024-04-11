@@ -1,18 +1,18 @@
 # Controls
 
-<!--## load-up console
-* to disable the console, add a file named "skipinitconsole.txt" next to the executable/python file
-
-    * this file can also hold some configs<br>
-    example:
-    ```
-    screenxy: 800, 800
-    pixelscale: 40
-    ```
-* -->
+## load-up console
+To disable the console, add a file named "skipinitconsole.txt" next to the executable/python file
+This file can also hold some configs<br>
+Example:
+```
+screenxy: 768, 768
+startingpixelscale: 6
+canvassize: 16, 16
+startingpalette: pypalette
+```
 
 ## Editor
-**Please note, black(0, 0, 0) is treated as completely transparent, use 1, 1, 1, instead**
+**Please note, black(0, 0, 0 in RGB and #000000 in hex) is treated as completely transparent when exporting, so use 1, 1, 1(or #010101) instead**
 
 ### Non-Exclusive
 * Escape: quit/exit Pyxil
@@ -27,6 +27,7 @@
     * hold Left or Right Shift to shift it by 5, instead
 * Left/Right Arrows: shift the currently selected color channel down/up by 10, respectively
     * hold Left or Right Shift to shift it by 50, instead-->
+* P: open the palette selection screen
 * Q: select the current pixel's color to paint with(eye dropper tool/color picker)
 * Backspace: set the current pixel to black
 * Control/Command + S: export what you currently have on the canvas as a .png or a .jpg

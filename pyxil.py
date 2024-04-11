@@ -38,7 +38,7 @@ def clamp(value, min, max):
 
 
 
-#if not Path('./output').exists() and not Path('../output').exists(): os.mkdir('./output')
+if not Path('./output').exists(): os.mkdir('./output')
 
 
 
