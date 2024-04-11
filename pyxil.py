@@ -445,6 +445,7 @@ def saveas():
 
 game_running = True
 while game_running:
+    if ccolor != currentpalette[icolor[1]][icolor[0]]: ccolor = currentpalette[icolor[1]][icolor[0]]
     screen.fill((0, 0, 0))
     if can_use_left > 0: can_use_left -= 1
     if can_use_middle > 0: can_use_middle -= 1
