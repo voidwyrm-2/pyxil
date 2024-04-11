@@ -566,10 +566,10 @@ while game_running:
             if event.key == pygame.K_SPACE and not mousemode:
                 canvas[pixindex[0]][pixindex[1]] = tuple(ccolor)
             
-            if event.key == pygame.K_q:
-                ccolor = list(canvas[pixindex[0]][pixindex[1]])
+            if event.key == pygame.K_q and not mousemode:
+                ccolor = colorpick(canvas[pixindex[0]][pixindex[1]])
             
-            if event.key == pygame.K_BACKSPACE:
+            if event.key == pygame.K_BACKSPACE and not mousemode:
                 canvas[pixindex[0]][pixindex[1]] = (0, 0, 0)
             
             if event.key == pygame.K_s and holding_control: isexporting = True

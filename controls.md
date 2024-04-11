@@ -20,21 +20,22 @@ startingpalette: pypalette
 * H: toggle showing that classic dark grey-light grey checker pattern-->
 * G: toggle showing that classic dark grey-light grey checker pattern
 * M: toggle between mouse mode and keyboard mode(defaults to mouse mode)
-<!--* R: toggle showing the color channel diplay in the top-left-->
-<!--* C: toggle visually showing the current color as a colored square-->
-<!--* Semicolon/Apostrophe: change the currently selected color channel(red, green, or blue); the color channels are shown in the top-left corner-->
-<!--* Up/Down Arrows: shift the currently selected color channel up/down by 1, respectively
+<!--* R: toggle showing the color channel diplay in the top-left
+* C: toggle visually showing the current color as a colored square
+* Semicolon/Apostrophe: change the currently selected color channel(red, green, or blue); the color channels are shown in the top-left corner
+* Up/Down Arrows: shift the currently selected color channel up/down by 1, respectively
     * hold Left or Right Shift to shift it by 5, instead
 * Left/Right Arrows: shift the currently selected color channel down/up by 10, respectively
     * hold Left or Right Shift to shift it by 50, instead-->
-* P: open the palette selection screen
-* Q: select the current pixel's color to paint with(eye dropper tool/color picker)
+* Up/Down/Left/Right Arrows: switch the selected color from the current palette
+* P: open the palette selection screen(not yet implemented)
 * Backspace: set the current pixel to black
 * Control/Command + S: export what you currently have on the canvas as a .png or a .jpg
 
 ### Keyboard Mode Exclusive
 * W/A/S/D: move brush
 * Space: paint pixel
+* Q: select the current pixel's color to paint with(eye dropper tool/color picker)
 
 ### Mouse Mode Exclusive
 * Brush follows mouse
