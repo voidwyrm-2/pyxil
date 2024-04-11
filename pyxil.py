@@ -2,6 +2,7 @@ import pygame
 from pathlib import Path
 from PIL import Image, ImageDraw
 import os
+from enum import Enum
 
 '''
    Copyright 2024 Nuclear Pasta
@@ -419,17 +420,42 @@ def colorpick(color: tuple[int, int, int]):
 mouse_x, mouse_y = 0, 0
 m_left, m_middle, m_right = False, False, False
 can_use_left, can_use_middle, can_use_right = 0, 0, 0
+
 mousemode = True
+
 holding_control = False
 holding_shift = False
+
+# tools
+class Tools(Enum):
+    PENCIL = 'pencil'
+    BUCKET = 'bucket'
+    LINE = 'line'
+    SHAPETOOL = 'shapetool'
+
+currenttool = Tools.PENCIL
+
+# background
 candrawlinegrid = False
 candrawcheckergrid = False
 whitebackground = False
+
 #canshowrgb = True
 #colordisplay = False
+
 selectingpalette = False
+
 isexporting = False
-cp_timer = 0
+
+# timers
+cp_timer = 0 # current palette timer
+ct_timer = 0 # current tool timer
+
+
+
+def showcurrenttool(x, y):
+    text = mainfont.render(f'current tool is now {currenttool.value}', not ispixelcode, (255, 255, 255))
+    screen.blit(text, (x, y))
 
 
 
@@ -512,6 +538,12 @@ while game_running:
             #if event.key == pygame.K_g and candrawlinegrid: candrawlinegrid = False
             #elif event.key == pygame.K_g and not candrawlinegrid: candrawlinegrid = True
 
+            match event.key:
+                case pygame.K_1: currenttool = Tools.PENCIL; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+                case pygame.K_2: currenttool = Tools.BUCKET; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+                case pygame.K_3: currenttool = Tools.LINE; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+                case pygame.K_4: currenttool = Tools.SHAPETOOL; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+
             if event.key == pygame.K_g and candrawcheckergrid: candrawcheckergrid = False
             elif event.key == pygame.K_g and not candrawcheckergrid: candrawcheckergrid = True
 
@@ -565,16 +597,16 @@ while game_running:
             '''
             
             if event.key == pygame.K_RIGHT:
-                icolor[0] = clamp(icolor[0] + 1, 0, len(currentpalette[icolor[1]]) - 1); cp_timer = 30
+                icolor[0] = clamp(icolor[0] + 1, 0, len(currentpalette[icolor[1]]) - 1); cp_timer = 35
                 
             if event.key == pygame.K_LEFT:
-                icolor[0] = clamp(icolor[0] - 1, 0, len(currentpalette[icolor[1]]) - 1); cp_timer = 30
+                icolor[0] = clamp(icolor[0] - 1, 0, len(currentpalette[icolor[1]]) - 1); cp_timer = 35
             
             if event.key == pygame.K_UP:
-                icolor[1] = clamp(icolor[1] - 1, 0, len(currentpalette) - 1); cp_timer = 30
+                icolor[1] = clamp(icolor[1] - 1, 0, len(currentpalette) - 1); cp_timer = 35
 
             if event.key == pygame.K_DOWN:
-                icolor[1] = clamp(icolor[1] + 1, 0, len(currentpalette) - 1); cp_timer = 30
+                icolor[1] = clamp(icolor[1] + 1, 0, len(currentpalette) - 1); cp_timer = 35
         
             if event.key == pygame.K_w and not mousemode:
                 if pixindex[0] > 0: pixindex[0] -= 1
@@ -589,7 +621,9 @@ while game_running:
                 if pixindex[1] < len(canvas[0]): pixindex[1] += 1
             
             if event.key == pygame.K_SPACE and not mousemode:
-                canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
+                match currenttool:
+                    case Tools.PENCIL: canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
+                    case x: print(f'unknown tool "{currenttool}"')
             
             if event.key == pygame.K_q and not mousemode:
                 icolor = colorpick(canvas[pixindex[0]][pixindex[1]])
@@ -626,7 +660,9 @@ while game_running:
     m_left, m_middle, m_right = pygame.mouse.get_pressed()
 
     if m_left and mousemode and can_use_left == 0:
-        canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
+        match currenttool:
+            case Tools.PENCIL: canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
+            case x: print(f'unknown tool "{currenttool}"')
         can_use_left = 2
     
     if m_right and mousemode and can_use_right == 0:
@@ -669,11 +705,12 @@ while game_running:
 
     #drawborderLs()
 
-    if cp_timer: draw_cpalette(5, 5, 20)
-
     #print(pixelstart, holding_shift)
 
     drawcursor()
+    
+    if cp_timer: draw_cpalette(5, 5, 20)
+    if ct_timer: showcurrenttool(5, screenxy[1] - 40)
 
     #drawrgbhitbox()
 
