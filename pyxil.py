@@ -270,17 +270,20 @@ try:
     else: print('unable to access users'); raise FileNotFoundError() # if there are no users, jump to next try-except
     print(f'users accessed(user "{user}"), attempting to get "PixelCode-Medium.ttf"...')
     mainfont = pygame.font.Font('/Users/' + user + '/Library/Fonts/PixelCode-Medium.ttf', 20) # attempt to get the coolest and best font(MacOS specific path)
+    smolfont = pygame.font.Font('/Users/' + user + '/Library/Fonts/PixelCode-Medium.ttf', 5)
     print('succesfully got "PixelCode-Medium.ttf"')
     ispixelcode = True
 except FileNotFoundError: # if trying to get the coolest and best font fails, fall back to the second greatest
     print('attempt failed, falling back to "Comic Sans MS.ttf"...')
     try:
         mainfont = pygame.font.Font('/System/Library/Fonts/Supplemental/Comic Sans MS.ttf', 20) # attempt to get the second greatest font(MacOS specific path)
+        smolfont = pygame.font.Font('/System/Library/Fonts/Supplemental/Comic Sans MS.ttf', 5) # attempt to get the second greatest font(MacOS specific path)
         print('successfully fell back on "Comic Sans MS.ttf"')
     except FileNotFoundError: # if that fails, fall back to the worst font possible
         print('failed, falling back to boring as heck default font...')
         try:
             mainfont = pygame.font.Font('freesansbold.ttf', 20) # attempt to get the worst font possible
+            smolfont = pygame.font.Font('freesansbold.ttf', 5) # attempt to get the worst font possible
             print('successfully fell back on "freesansbold.ttf"(sadly)')
         except Exception as e: # if even THAT fails, screw you
             print('unknown failure occured:')
@@ -384,6 +387,19 @@ def showrgb(x, y, color):
 
 def showcolor(x, y):
     pygame.draw.rect(screen, ccolor, (x, y, 50, 20))
+
+
+def drawborderLs():
+    #border1 = smolfont.render('boarder', not ispixelcode, (255, 255, 255))
+    #border2 = smolfont.render('boarder', not ispixelcode, (255, 255, 255))
+    linewidth = 2
+    cornerpos = 10
+    #screen.blit(border1, (pixelstart[0] - cornerpos, (pixelstart[1] - cornerpos) - 8))
+    pygame.draw.line(screen, (255, 255, 255), (pixelstart[0] - cornerpos, pixelstart[0] - linewidth), (pixelstart[0] + (cornerpos * 2), pixelstart[0] - linewidth), linewidth - pixelscale)
+    pygame.draw.line(screen, (255, 255, 255), (pixelstart[0] - linewidth, pixelstart[0] - cornerpos), (pixelstart[0] - linewidth, pixelstart[0] + (cornerpos * 2)), linewidth - pixelscale)
+
+    pygame.draw.line(screen, (255, 255, 255), (pixelstart[0] - cornerpos, pixelstart[0] - linewidth), (pixelstart[0] + (cornerpos * 2), pixelstart[0] - linewidth), linewidth - pixelscale)
+    pygame.draw.line(screen, (255, 255, 255), (pixelstart[0] - linewidth, pixelstart[0] - cornerpos), (pixelstart[0] - linewidth, pixelstart[0] + (cornerpos * 2)), linewidth - pixelscale)
 
 
 def showisexporting(x, y):
@@ -586,12 +602,10 @@ while game_running:
                 else: ccolor[icolor] -= event.dict['y']
             else:'''
             if holding_shift:
-                #print('working 1')
-                #print(event.dict)
-                #print('working 2')
                 pixelstart[0] -= event.dict['x']
             elif holding_control:
-                pixelstart[1] -= event.dict['x']
+                print(event.dict)
+                pixelstart[1] -= event.dict['y']
             else:
                 if pixelscale - event.dict['y'] < 1: pixelscale = 1
                 else: pixelscale -= event.dict['y']
@@ -643,6 +657,8 @@ while game_running:
     if candrawcheckergrid: drawcheckergrid()
 
     drawpixels()
+
+    #drawborderLs()
 
     if cp_timer: draw_cpalette(5, 5, 20)
 

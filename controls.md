@@ -30,7 +30,7 @@ startingpalette: pypalette
 * Up/Down/Left/Right Arrows: switch the selected color from the current palette
 * P: open the palette selection screen(not yet implemented)
 * Backspace: set the current pixel to black
-* Control/Command + S: export what you currently have on the canvas as a .png or a .jpg
+* Control + S: export what you currently have on the canvas as a .png or a .jpg
 
 ### Keyboard Mode Exclusive
 * W/A/S/D: move brush
@@ -45,4 +45,4 @@ startingpalette: pypalette
 <!--* Hovering over the rgb values and scrolling: raise/lower rgb values-->
 * Mouse Scroll: zoom in/out
 * Left or Right Shift + Mouse Scroll: move the canvas horizontally
-* Left or Right Control/Command + Mouse Scroll: move the canvas Vertically
+* Left or Right Control + Mouse Scroll: move the canvas Vertically
