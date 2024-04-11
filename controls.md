@@ -27,6 +27,7 @@ startingpalette: pypalette
     * hold Left or Right Shift to shift it by 5, instead
 * Left/Right Arrows: shift the currently selected color channel down/up by 10, respectively
     * hold Left or Right Shift to shift it by 50, instead-->
+* B: switch between the white and black background(defaults to black)
 * Up/Down/Left/Right Arrows: switch the selected color from the current palette
 * P: open the palette selection screen(not yet implemented)
 * Backspace: set the current pixel to black

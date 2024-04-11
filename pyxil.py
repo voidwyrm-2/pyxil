@@ -424,6 +424,7 @@ holding_control = False
 holding_shift = False
 candrawlinegrid = False
 candrawcheckergrid = False
+whitebackground = False
 #canshowrgb = True
 #colordisplay = False
 selectingpalette = False
@@ -485,7 +486,10 @@ game_running = True
 while game_running:
     icolor[0] = clamp(icolor[0], 0, len(currentpalette[icolor[1]]) - 1)
     icolor[1] = clamp(icolor[1], 0, len(currentpalette) - 1)
-    screen.fill((0, 0, 0))
+
+    if whitebackground: screen.fill((255, 255, 255))
+    else: screen.fill((0, 0, 0))
+
     if can_use_left > 0: can_use_left -= 1
     if can_use_middle > 0: can_use_middle -= 1
     if can_use_right > 0: can_use_right -= 1
@@ -510,6 +514,9 @@ while game_running:
 
             if event.key == pygame.K_g and candrawcheckergrid: candrawcheckergrid = False
             elif event.key == pygame.K_g and not candrawcheckergrid: candrawcheckergrid = True
+
+            if event.key == pygame.K_b and whitebackground: whitebackground = False
+            elif event.key == pygame.K_b and not whitebackground: whitebackground = True
 
             if event.key == pygame.K_m and mousemode: mousemode = False
             elif event.key == pygame.K_m and not mousemode: mousemode = True
