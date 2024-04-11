@@ -46,7 +46,11 @@ colors = sorted(colors,key=lambda x: x[1][0] + x[1][1] + x[1][2] + x[1][3], reve
 
 out = f'{size_x}-{size_y}\n'
 
-for c in colors: out += f'{c[1][0]}, {c[1][1]}, {c[1][2]}\n'
+for c in colors:
+    r, g, b, a = c[1]
+    if a <= 0: continue
+    if (r, g, b) == (0, 0, 0): r, g, b = 1, 1, 1
+    out += f'{r}, {g}, {b}\n'
 out = out.strip()
 
 
