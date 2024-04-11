@@ -78,7 +78,7 @@ DEFAULT_PALETTE = '''4-9
 6, 6, 122
 6, 122, 6
 69, 36, 14
-0, 0, 0'''
+1, 1, 1'''
 
 
 
@@ -304,13 +304,13 @@ def showtext(x, y):
 
 
 
-icolor = 0, 0
+icolor = [0, 0]
 
-ccolor = currentpalette[icolor[1], icolor[0]]
+ccolor = currentpalette[icolor[1]][icolor[0]]
 
-pixindex = 0, 0
+pixindex = [0, 0]
 
-pixelstart = 0, 0
+pixelstart = [0, 0]
 
 
 canvas = {y: {x: (0, 0, 0) for x in range(canvassize[0] + 1)} for y in range(canvassize[1] + 1)} #{y: {x: (0, 0, 0) for x in range(screenxy[0] // pixelscale)} for y in range(screenxy[1] // pixelscale)}
@@ -356,6 +356,18 @@ def drawpixels():
             pygame.draw.rect(screen, canvas[y][x], ((x * pixelscale) + pixelstart[0], (y * pixelscale) + pixelstart[1], pixelscale, pixelscale))
 
 
+
+def draw_cpalette(x, y, scale):
+    for cpy in list(currentpalette.keys()):
+        for cpx in list(currentpalette[y].keys()):
+            pygame.draw.rect(screen, currentpalette[cpy][cpx], ((cpx * scale) + x, (cpy * scale) + y, scale, scale))
+            if icolor[1] == cpy and icolor[0] == cpx:
+                r, b, g = currentpalette[cpy][cpx]
+                selcolor = (0, 0, 0) if (r + b + g) * 3 > 1151 else (255, 255, 255)
+                pygame.draw.rect(screen, selcolor, ((cpx * scale) + x, (cpy * scale) + y, scale, scale), 2)
+
+
+
 def drawrgbhitbox():
     pygame.draw.rect(screen, (255, 0, 0), (4, 10, 38, 20))
     pygame.draw.rect(screen, (0, 255, 0), (49, 10, 38, 20))
@@ -368,6 +380,7 @@ def showrgb(x, y, color):
         if icolor == c:
             cursor = mainfont.render('^', False, color)
             screen.blit(cursor, (x + (45 * c), y + 20))
+
 
 def showcolor(x, y):
     pygame.draw.rect(screen, ccolor, (x, y, 50, 20))
@@ -382,7 +395,7 @@ def showisexporting(x, y):
 mouse_x, mouse_y = 0, 0
 m_left, m_middle, m_right = False, False, False
 can_use_left, can_use_middle, can_use_right = 0, 0, 0
-mousemode = False
+mousemode = True
 holding_control = False
 holding_shift = False
 candrawlinegrid = False
@@ -391,6 +404,7 @@ candrawcheckergrid = False
 #colordisplay = False
 selectingpalette = False
 isexporting = False
+cp_timer = 0
 
 
 
@@ -450,6 +464,8 @@ while game_running:
     if can_use_left > 0: can_use_left -= 1
     if can_use_middle > 0: can_use_middle -= 1
     if can_use_right > 0: can_use_right -= 1
+
+    if cp_timer > 0: cp_timer -= 1
 
     if isexporting:
         clock.tick(60)
@@ -517,14 +533,16 @@ while game_running:
             '''
             
             if event.key == pygame.K_RIGHT:
-                if icolor[0] < len(currentpalette[0]) - 1: icolor[0] += 1
+                if icolor[0] < len(currentpalette[0]) - 1: icolor[0] += 1; cp_timer = 30
+                
             if event.key == pygame.K_LEFT:
-                if icolor[0] > 0: icolor[0] -= 1
+                if icolor[0] > 0: icolor[0] -= 1; cp_timer = 30
             
             if event.key == pygame.K_UP:
-                if icolor[1] < len(currentpalette) - 1: icolor[1] += 1
+                if icolor[1] > 0: icolor[1] -= 1; cp_timer = 30
+
             if event.key == pygame.K_DOWN:
-                if icolor[1] > 0: icolor[1] -= 1
+                if icolor[1] < len(currentpalette) - 1: icolor[1] += 1; cp_timer = 30
         
             if event.key == pygame.K_w and not mousemode:
                 if pixindex[0] > 0: pixindex[0] -= 1
@@ -619,11 +637,13 @@ while game_running:
 
     drawpixels()
 
+    if cp_timer: draw_cpalette(5, 5, 20)
+
     #print(pixelstart, holding_shift)
 
     drawcursor()
 
-    drawrgbhitbox()
+    #drawrgbhitbox()
 
     #if canshowrgb: showrgb(5, 5, (255, 255, 255))
     #if colordisplay: showcolor(5, 47)
