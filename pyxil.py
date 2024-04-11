@@ -489,7 +489,7 @@ def export(filename_to_export: str):
         img_upscaled = img.resize((oldsize[0] * upscalefactor, oldsize[1] * upscalefactor), Image.Resampling.BOX)
         img = img_upscaled
         print('image resized')
-    print(f'saving as "{output + '/' + filename_to_export}"...')
+    print(f'saving as "{output + "/" + filename_to_export}"...')
     img.save(output + '/' + filename_to_export)
     print('saved')
     isexporting = False
