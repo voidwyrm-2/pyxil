@@ -125,7 +125,7 @@ canvassize = 16, 16
 pixelscale = 10
 gridcolors = (128, 128, 128), (191, 191, 191)
 currentpalette = palette_interpreter(DEFAULT_PALETTE)
-print(currentpalette)
+#print(currentpalette)
 
 
 def comhelp():
@@ -359,7 +359,7 @@ def drawpixels():
 
 def draw_cpalette(x, y, scale):
     for cpy in list(currentpalette.keys()):
-        for cpx in list(currentpalette[y].keys()):
+        for cpx in list(currentpalette[cpy].keys()):
             pygame.draw.rect(screen, currentpalette[cpy][cpx], ((cpx * scale) + x, (cpy * scale) + y, scale, scale))
             if icolor[1] == cpy and icolor[0] == cpx:
                 r, b, g = currentpalette[cpy][cpx]
@@ -389,6 +389,13 @@ def showcolor(x, y):
 def showisexporting(x, y):
     text = mainfont.render('Please look at the console', not ispixelcode, (255, 255, 255))
     screen.blit(text, (x, y))
+
+
+
+def colorpick(color: tuple[int, int, int]):
+    for cpy in list(currentpalette.keys()):
+        for cpx in list(currentpalette[cpy].keys()):
+            if color == currentpalette[cpy][cpx]: return [cpx, cpy]
 
 
 
@@ -605,7 +612,7 @@ while game_running:
         can_use_right = 2
     
     if m_middle and mousemode and can_use_middle == 0:
-        ccolor = list(canvas[pixindex[0]][pixindex[1]])
+        icolor = colorpick(canvas[pixindex[0]][pixindex[1]])
         can_use_middle = 2
 
     #showtext(50, 100)
