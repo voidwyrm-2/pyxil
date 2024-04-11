@@ -39,7 +39,7 @@ def clamp(value, min, max):
 
 
 
-if not Path('./output').exists(): os.mkdir('./output')
+#if not Path('./output/').exists(): os.mkdir('./output')
 
 
 
@@ -126,6 +126,7 @@ canvassize = 16, 16
 pixelscale = 10
 gridcolors = (128, 128, 128), (191, 191, 191)
 currentpalette = palette_interpreter(DEFAULT_PALETTE)
+output = './output'
 #print(currentpalette)
 
 
@@ -167,25 +168,33 @@ else:
         print('"skipinitconsole.txt" not found, ignoring')
 
 try: sx, sy = clisettings['screenxy'].split(','); sx, sy = int(sx), int(sy); screenxy = sx, sy
-except KeyError: print('"screenxy" value not given, using default')
+except KeyError: print('"screenxy" value not given, using default instead')
 except Exception as e: print(e)
 
 
 try: pixelscale = int(clisettings['startingpixelscale'])
-except KeyError: print('"startingpixelscale" value not given, using default')
+except KeyError: print('"startingpixelscale" value not given, using default instead')
 except Exception as e: print(e)
 
 
 try: sx, sy = clisettings['canvassize'].split(','); sx, sy = int(sx), int(sy); canvassize = sx, sy
-except KeyError: print('"canvassize" value not given, using default')
+except KeyError: print('"canvassize" value not given, using default instead')
 except Exception as e: print(e)
 
 
 try:
     startpal = './palettes/' + clisettings['startingpalette'].removeprefix('.pypal') + '.pypal'
-    if not Path(startpal).exists(): print(f'palette "{startpal}" doesn\'t exist'); raise KeyError()
+    if not Path(startpal).exists(): print(f'palette "{startpal}" doesn\'t exist, using default instead'); raise KeyError()
     currentpalette = load_palette(startpal)
-except KeyError: print('"palette" value not given, using default')
+except KeyError: print('"palette" value not given, using default instead')
+except Exception as e: print(e)
+
+
+try:
+    outputconf = Path(clisettings['output'])
+    if not Path(outputconf).exists(): print(f'palette "{outputconf}" doesn\'t exist, using default instead'); raise KeyError()
+    output = str(outputconf).removesuffix('/').removesuffix('\\')
+except KeyError: print('"output" value not given, using default instead')
 except Exception as e: print(e)
 
 
@@ -480,8 +489,8 @@ def export(filename_to_export: str):
         img_upscaled = img.resize((oldsize[0] * upscalefactor, oldsize[1] * upscalefactor), Image.Resampling.BOX)
         img = img_upscaled
         print('image resized')
-    print(f'saving as "{filename_to_export}"...')
-    img.save('output/' + filename_to_export)
+    print(f'saving as "{output + '/' + filename_to_export}"...')
+    img.save(output + '/' + filename_to_export)
     print('saved')
     isexporting = False
     print('exporting complete')
@@ -504,7 +513,15 @@ def saveas():
             inp = inp.removeprefix('save ').strip()
             if len(inp.rsplit('.', 1)) == 2 and inp.rsplit('.', 1)[-1] not in ('png', 'jpg'): print('extension is not valid!'); continue
             if not inp.endswith(('.png', '.jpg')): inp += '.png'
+            if Path(output, inp).exists():
+                while True:
+                    reply = input(f'image "{inp}" already exists, do you want to overwrite it?(y/n)\n')
+                    match reply:
+                        case 'y': os.remove(output + '/' + inp); break
+                        case 'n': return
+                        case x: continue
             export(inp)
+            break
 
 
 

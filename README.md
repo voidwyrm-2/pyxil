@@ -30,8 +30,9 @@ I don't want to code a complex color system, so it will stay that way
 
 
 ## Pronunciation
-"Pyxil" is pronounced "py-zil", "piks-zil", or "pikes-zil"<br>
-(your house will be over-run by isopods if you pronounce it any other way)
+"Pyxil" is pronounced "py-zil", "pike-zil", "piks-zil", "pikes-zil" or "FEWFHUIWHWEFWUGIEWHFIWUHDAJBCYKUQWTRCCUYQNCCUBGETR"<br>
+(your house will be over-run by isopods if you pronounce it any other way)<br>
+(and if you say the last one you'll summon an eldritch god, just keep that in mind)
 
 
 ## Other Stuff
