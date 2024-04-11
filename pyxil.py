@@ -389,7 +389,9 @@ candrawlinegrid = False
 candrawcheckergrid = False
 #canshowrgb = True
 #colordisplay = False
+selectingpalette = False
 isexporting = False
+
 
 
 def export(filename_to_export: str):
@@ -469,6 +471,9 @@ while game_running:
 
             if event.key == pygame.K_m and mousemode: mousemode = False
             elif event.key == pygame.K_m and not mousemode: mousemode = True
+
+            if event.key == pygame.K_p and selectingpalette: selectingpalette = False
+            elif event.key == pygame.K_p and not selectingpalette: selectingpalette = True
 
             #if event.key == pygame.K_r and canshowrgb: canshowrgb = False
             #elif event.key == pygame.K_r and not canshowrgb: canshowrgb = True
