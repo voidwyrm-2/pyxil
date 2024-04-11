@@ -316,7 +316,8 @@ pixindex = [0, 0]
 pixelstart = [0, 0]
 
 
-canvas = {y: {x: (0, 0, 0) for x in range(canvassize[0] + 1)} for y in range(canvassize[1] + 1)} #{y: {x: (0, 0, 0) for x in range(screenxy[0] // pixelscale)} for y in range(screenxy[1] // pixelscale)}
+canvas = {y: {x: (0, 0, 0) for x in range(canvassize[0])} for y in range(canvassize[1])} #{y: {x: (0, 0, 0) for x in range(screenxy[0] // pixelscale)} for y in range(screenxy[1] // pixelscale)}
+print(len(canvas), len(canvas[0]))
 
 
 def drawcursor(): pygame.draw.rect(screen, (255, 255, 255), ((pixindex[1] * pixelscale) + pixelstart[0], (pixindex[0] * pixelscale) + pixelstart[1], pixelscale, pixelscale), 1)
@@ -604,7 +605,6 @@ while game_running:
             if holding_shift:
                 pixelstart[0] -= event.dict['x']
             elif holding_control:
-                print(event.dict)
                 pixelstart[1] -= event.dict['y']
             else:
                 if pixelscale - event.dict['y'] < 1: pixelscale = 1
@@ -649,9 +649,10 @@ while game_running:
     '''
 
     if mousemode:
-        mx = (mouse_x - pixelstart[0]) // pixelscale
-        my = (mouse_y - pixelstart[1]) // pixelscale
-        if (mx > 0 and mx < len(canvas[0])) and (my > 0 and my < len(canvas)): pixindex = [my, mx]
+        mx = clamp((mouse_x - pixelstart[0]) // pixelscale, 0, len(canvas[0]) - 1)
+        my = clamp((mouse_y - pixelstart[1]) // pixelscale, 0, len(canvas) - 1)
+        #if (mx > 0 and mx < len(canvas[0])) and (my > 0 and my < len(canvas)):
+        pixindex = [my, mx]
 
     #if candrawlinegrid: drawlinegrid()
     if candrawcheckergrid: drawcheckergrid()
