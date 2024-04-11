@@ -557,7 +557,7 @@ while game_running:
             '''
             
             if event.key == pygame.K_RIGHT:
-                if icolor[0] < len(currentpalette[0]) - 1: icolor[0] += 1; cp_timer = 30
+                if icolor[0] < len(currentpalette[icolor[1]]) - 1: icolor[0] += 1; cp_timer = 30
                 
             if event.key == pygame.K_LEFT:
                 if icolor[0] > 0: icolor[0] -= 1; cp_timer = 30
@@ -566,7 +566,7 @@ while game_running:
                 if icolor[1] > 0: icolor[1] -= 1; cp_timer = 30
 
             if event.key == pygame.K_DOWN:
-                if icolor[1] < len(currentpalette) - 1: icolor[1] += 1; cp_timer = 30
+                if icolor[1] < len(currentpalette[icolor[1]]) - 1: icolor[1] += 1; cp_timer = 30
         
             if event.key == pygame.K_w and not mousemode:
                 if pixindex[0] > 0: pixindex[0] -= 1
