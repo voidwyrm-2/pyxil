@@ -3,6 +3,9 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 import os
 from enum import Enum
+import logging
+import time
+logging.basicConfig(level=logging.DEBUG)
 
 '''
    Copyright 2024 Nuclear Pasta
@@ -86,10 +89,10 @@ DEFAULT_PALETTE = '''4-9
 def palette_interpreter(palette: str | list[str]):
     if type(palette) == str: palette = palette.split('\n')
     xy = palette.pop(0)
-    if xy.count('-') != 1: print('invalid palette dimensions, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
+    if xy.count('-') != 1: logging.warning('invalid palette dimensions, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
     else:
         xy = xy.split('-')
-        if not xy[0].isdigit() or not xy[1].isdigit(): print('invalid palette dimensions, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
+        if not xy[0].isdigit() or not xy[1].isdigit(): logging.warning('invalid palette dimensions, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
     x, y = int(xy[0]), int(xy[1])
     out = {i: {} for i in range(y)}
     cy = 0
@@ -98,11 +101,11 @@ def palette_interpreter(palette: str | list[str]):
         line = line.strip().replace(' ', '')
         l = line.split(',')
         if len(line) < 1 or line.startswith('--'): continue
-        if len(line) < 1 or line.count(',') != 2 or len(line) > 11: print(f'invalid line "{line}" in palette, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
-        if not l[0].isdigit() or not l[1].isdigit() or not l[2].isdigit(): print(f'invalid line "{line}" in palette, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
+        if len(line) < 1 or line.count(',') != 2 or len(line) > 11: logging.warning(f'invalid line "{line}" in palette, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
+        if not l[0].isdigit() or not l[1].isdigit() or not l[2].isdigit(): logging.warning(f'invalid line "{line}" in palette, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
         
         r, g, b = int(l[0]), int(l[1]), int(l[2])
-        if r > 255 or g > 255 or b > 255: print(f'invalid line "{line}" in palette, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
+        if r > 255 or g > 255 or b > 255: logging.warning(f'invalid line "{line}" in palette, using default instead'); return palette_interpreter(DEFAULT_PALETTE)
 
         if cx > x - 1: cx = 0; cy += 1
         out[cy][cx] = (r, g, b)
@@ -157,47 +160,47 @@ clisettings: dict[str, str] = {}
 if Path('./skipinitconsole.txt').exists():
     with open('./skipinitconsole.txt', 'rt') as sf: f = sf.read().split('\n')
     try: clisettings = {l.replace(' ', '').split(':')[0]: l.replace(' ', '').split(':')[1] for l in f}
-    except Exception as e: print(e)
+    except Exception as e: logging.error(e)
     cli_running = False
 else:
     if Path('../skipinitconsole.txt').exists():
         with open('../skipinitconsole.txt', 'rt') as sf: f = sf.read().split('\n')
         try: clisettings = {l.replace(' ', '').split(':')[0]: l.replace(' ', '').split(':')[1] for l in f}
-        except Exception as e: print(e)
+        except Exception as e: logging.error(e)
         cli_running = False
     else:
-        print('"skipinitconsole.txt" not found, ignoring')
+        logging.info('"skipinitconsole.txt" not found, ignoring')
 
 try: sx, sy = clisettings['screenxy'].split(','); sx, sy = int(sx), int(sy); screenxy = sx, sy
-except KeyError: print('"screenxy" value not given, using default instead')
-except Exception as e: print(e)
+except KeyError: logging.info('"screenxy" value not given, using default instead')
+except Exception as e: logging.error(e)
 
 
 try: pixelscale = int(clisettings['startingpixelscale'])
-except KeyError: print('"startingpixelscale" value not given, using default instead')
-except Exception as e: print(e)
+except KeyError: logging.info('"startingpixelscale" value not given, using default instead')
+except Exception as e: logging.error(e)
 
 
 try: sx, sy = clisettings['canvassize'].split(','); sx, sy = int(sx), int(sy); canvassize = sx, sy
-except KeyError: print('"canvassize" value not given, using default instead')
-except Exception as e: print(e)
+except KeyError: logging.info('"canvassize" value not given, using default instead')
+except Exception as e: logging.error(e)
 
 
 try:
     startpal = './palettes/' + clisettings['startingpalette'].removeprefix('.pypal') + '.pypal'
-    if not Path(startpal).exists(): print(f'palette "{startpal}" doesn\'t exist, using default instead'); raise KeyError()
+    if not Path(startpal).exists(): logging.info(f'palette "{startpal}" doesn\'t exist, using default instead'); raise KeyError()
     currentpalette = load_palette(startpal)
-except KeyError: print('"palette" value not given, using default instead')
-except Exception as e: print(e)
+except KeyError: logging.info('"palette" value not given, using default instead')
+except Exception as e: logging.error(e)
 
 
 try:
     outputconf = Path(clisettings['output'])
-    if not Path(outputconf).exists(): print(f'path "{outputconf}" doesn\'t exist, using default instead'); raise KeyError()
-    if not Path(outputconf).is_dir(): print(f'path "{outputconf}" isn\'t a folder, using default instead'); raise KeyError()
+    if not Path(outputconf).exists(): logging.info(f'path "{outputconf}" doesn\'t exist, using default instead'); raise KeyError()
+    if not Path(outputconf).is_dir(): logging.info(f'path "{outputconf}" isn\'t a folder, using default instead'); raise KeyError()
     output = str(outputconf).removesuffix('/').removesuffix('\\')
-except KeyError: print('"output" value not given, using default instead')
-except Exception as e: print(e)
+except KeyError: logging.info('"output" value not given, using default instead')
+except Exception as e: logging.error(e)
 
 
 if cli_running: comhelp()
@@ -250,16 +253,16 @@ pygame.display.set_caption('Pyxil Art Program')
 
 
 try:
-    print('attempting to access app icon...')
+    logging.info('attempting to access app icon...')
     icon = pygame.image.load('./pyxil-iconv1.png')
-    print('attempt was successful, icon set')
+    logging.info('attempt was successful, icon set')
 except FileNotFoundError:
     try:
-        print('attempt failed, attempting again...')
+        logging.info('attempt failed, attempting again...')
         icon = pygame.image.load('../pyxil-iconv1.png')
-        print('attempt was successful, icon set')
+        logging.info('attempt was successful, icon set')
     except FileNotFoundError:
-        print('second attempt failed, ignoring')
+        logging.info('second attempt failed, ignoring')
         icon = Ignore()
 if type(icon) != Ignore: pygame.display.set_icon(icon)
 
@@ -270,7 +273,7 @@ pygame.font.init() # initiate font
 # font getter code(I'm sorry)
 ispixelcode = False
 try:
-    print('attempting to access users...')
+    logging.info('attempting to access users...')
     users = [str(f).rsplit('/', 1)[-1] for f in Path('/Users').iterdir()] # get all folders inside the "/Users" root folder
     remove = []
     for u in range(len(users)):
@@ -279,28 +282,28 @@ try:
     for rm in remove: del users[rm] # # remove flagged folders
     del remove
     if len(users) > 0: user = users[0]; del users # get first user(for no reason in particular, it's just the easiest)
-    else: print('unable to access users'); raise FileNotFoundError() # if there are no users, jump to next try-except
-    print(f'users accessed(user "{user}"), attempting to get "PixelCode-Medium.ttf"...')
+    else: logging.info('unable to access users'); raise FileNotFoundError() # if there are no users, jump to next try-except
+    logging.info(f'users accessed(user "{user}"), attempting to get "PixelCode-Medium.ttf"...')
     mainfont = pygame.font.Font('/Users/' + user + '/Library/Fonts/PixelCode-Medium.ttf', 20) # attempt to get the coolest and best font(MacOS specific path)
     smolfont = pygame.font.Font('/Users/' + user + '/Library/Fonts/PixelCode-Medium.ttf', 5)
-    print('succesfully got "PixelCode-Medium.ttf"')
+    logging.info('succesfully got "PixelCode-Medium.ttf"')
     ispixelcode = True
 except FileNotFoundError: # if trying to get the coolest and best font fails, fall back to the second greatest
-    print('attempt failed, falling back to "Comic Sans MS.ttf"...')
+    logging.info('attempt failed, falling back to "Comic Sans MS.ttf"...')
     try:
         mainfont = pygame.font.Font('/System/Library/Fonts/Supplemental/Comic Sans MS.ttf', 20) # attempt to get the second greatest font(MacOS specific path)
         smolfont = pygame.font.Font('/System/Library/Fonts/Supplemental/Comic Sans MS.ttf', 5) # attempt to get the second greatest font(MacOS specific path)
-        print('successfully fell back on "Comic Sans MS.ttf"')
+        logging.info('successfully fell back on "Comic Sans MS.ttf"')
     except FileNotFoundError: # if that fails, fall back to the worst font possible
-        print('failed, falling back to boring as heck default font...')
+        logging.info('failed, falling back to boring as heck default font...')
         try:
             mainfont = pygame.font.Font('freesansbold.ttf', 20) # attempt to get the worst font possible
             smolfont = pygame.font.Font('freesansbold.ttf', 5) # attempt to get the worst font possible
-            print('successfully fell back on "freesansbold.ttf"(sadly)')
+            logging.info('successfully fell back on "freesansbold.ttf"(sadly)')
         except Exception as e: # if even THAT fails, screw you
-            print('unknown failure occured:')
-            print(e)
-            print('this application will now quit')
+            logging.info('unknown failure occured:')
+            logging.error(e)
+            logging.info('this application will now quit')
             raise SystemExit()
 
 
@@ -314,6 +317,39 @@ def showtext(x, y):
     text = mainfont.render('Hello world', not ispixelcode, (255, 255, 255))
     screen.blit(text, (x, y))
 '''
+
+
+
+
+
+#==============TOOLS AND BRUSHES==============#
+
+def tool_colorpick(color: tuple[int, int, int]):
+    for cpy in list(currentpalette):
+        for cpx in list(currentpalette[cpy]):
+            if color == currentpalette[cpy][cpx]: return [cpx, cpy]
+
+
+def tool_floodfill(image: dict[int, dict[int, tuple[int, int, int]]], start_x: int, start_y: int, new_color: tuple[int, int, int]):
+    xystack = [(start_x, start_y)]
+    original_color = image[start_y][start_x]
+    print(start_x, start_y, original_color, new_color)
+    if original_color == new_color:
+        return  # No need to fill if new_color is the same as original color
+    while xystack:
+        x, y = xystack.pop()
+        if image[y][x] == original_color:
+            image[y][x] = new_color
+            if y > 0 and image[y - 1][x] == original_color:
+                xystack.append((x, y - 1))
+            if y < len(image) - 1 and image[y + 1][x] == original_color:
+                xystack.append((x, y + 1))
+            if x > 0 and image[y][x - 1] == original_color:
+                xystack.append((x - 1, y))
+            if x < len(image[0]) - 1 and image[y][x + 1] == original_color:
+                xystack.append((x + 1, y))
+
+#==============END TOOLS AND BRUSHES==============#
 
 
 
@@ -421,13 +457,6 @@ def showisexporting(x, y):
 
 
 
-def colorpick(color: tuple[int, int, int]):
-    for cpy in list(currentpalette.keys()):
-        for cpx in list(currentpalette[cpy].keys()):
-            if color == currentpalette[cpy][cpx]: return [cpx, cpy]
-
-
-
 mouse_x, mouse_y = 0, 0
 m_left, m_middle, m_right = False, False, False
 can_use_left, can_use_middle, can_use_right = 0, 0, 0
@@ -437,6 +466,11 @@ mousemode = True
 holding_control = False
 holding_shift = False
 
+
+class Utils(Enum):
+    NO = 'empty'
+
+
 # tools
 class Tools(Enum):
     PENCIL = 'pencil'
@@ -444,7 +478,13 @@ class Tools(Enum):
     LINE = 'line'
     SHAPETOOL = 'shapetool'
 
+class ShapetoolShapes(Enum):
+    SQUARE = 'square'
+    CIRCLE = 'circle'
+
+
 currenttool = Tools.PENCIL
+currentshape = ShapetoolShapes.SQUARE
 
 # background
 candrawlinegrid = False
@@ -461,12 +501,18 @@ isexporting = False
 # timers
 cp_timer = 0 # current palette timer
 ct_timer = 0 # current tool timer
+cs_timer = 0
+fill_timer = 0 # fill tool timer
 
 
 
 def showcurrenttool(x, y):
-    text = mainfont.render(f'current tool is now {currenttool.value}', not ispixelcode, (255, 255, 255))
-    screen.blit(text, (x, y))
+    ctool = mainfont.render(f'current tool is now {currenttool.value}', not ispixelcode, (255, 255, 255))
+    screen.blit(ctool, (x, y))
+
+def showcurrentshape(x, y):
+    cshape = mainfont.render(f'current tool is now {currentshape.value}', not ispixelcode, (255, 255, 255))
+    screen.blit(cshape, (x, y))
 
 
 
@@ -526,9 +572,11 @@ def saveas():
             break
 
 
+#ticks = 0
 
 game_running = True
 while game_running:
+    #print(ticks)
     icolor[0] = clamp(icolor[0], 0, len(currentpalette[icolor[1]]) - 1)
     icolor[1] = clamp(icolor[1], 0, len(currentpalette) - 1)
 
@@ -540,6 +588,9 @@ while game_running:
     if can_use_right > 0: can_use_right -= 1
 
     if cp_timer > 0: cp_timer -= 1
+    if ct_timer > 0: ct_timer -= 1
+    if cs_timer > 0: cs_timer -= 1
+    if fill_timer > 0: fill_timer -= 1
 
     if isexporting:
         clock.tick(60)
@@ -557,11 +608,18 @@ while game_running:
             #if event.key == pygame.K_g and candrawlinegrid: candrawlinegrid = False
             #elif event.key == pygame.K_g and not candrawlinegrid: candrawlinegrid = True
 
-            match event.key:
-                case pygame.K_1: currenttool = Tools.PENCIL#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
-                case pygame.K_2: currenttool = Tools.BUCKET#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
-                case pygame.K_3: currenttool = Tools.LINE#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
-                case pygame.K_4: currenttool = Tools.SHAPETOOL#; print(f'current tool switched to "{currenttool}"'); ct_timer = 35
+            if holding_shift and currenttool == Tools.SHAPETOOL:
+                match event.key:
+                    case pygame.K_1: currentshape = ShapetoolShapes.SQUARE; cs_timer = 35
+                    case pygame.K_2: currentshape = ShapetoolShapes.CIRCLE; cs_timer = 35
+                    #case pygame.K_3: pass
+                    #case pygame.K_4: pass
+            else:
+                match event.key:
+                    case pygame.K_1: currenttool = Tools.PENCIL; ct_timer = 35 #; logging.debug(f'current tool switched to "{currenttool}"')
+                    case pygame.K_2: currenttool = Tools.BUCKET; ct_timer = 35 #; logging.debug(f'current tool switched to "{currenttool}"')
+                    case pygame.K_3: currenttool = Tools.LINE; ct_timer = 35 #; logging.debug(f'current tool switched to "{currenttool}"')
+                    case pygame.K_4: currenttool = Tools.SHAPETOOL; ct_timer = 35 #; logging.debug(f'current tool switched to "{currenttool}"')
 
             if event.key == pygame.K_g and candrawcheckergrid: candrawcheckergrid = False
             elif event.key == pygame.K_g and not candrawcheckergrid: candrawcheckergrid = True
@@ -584,6 +642,15 @@ while game_running:
             if event.key in (pygame.K_LSHIFT, pygame.K_RSHIFT): holding_shift = True
 
             if event.key in (pygame.K_LCTRL, pygame.K_RCTRL): holding_control = True
+
+            if event.key == pygame.K_c and holding_shift:
+                OLD_TIME = time.perf_counter()
+                NEW_CANVAS = {y: {x: (0, 0, 0) for x in range(canvassize[0])} for y in range(canvassize[1])}
+                canvas = NEW_CANVAS
+                del NEW_CANVAS
+                NEW_TIME = time.perf_counter()
+                logging.debug(f"clearing the canvas took {int(NEW_TIME - OLD_TIME)} seconds")
+
 
             '''
             if event.key == pygame.K_UP:
@@ -642,10 +709,17 @@ while game_running:
             if event.key == pygame.K_SPACE and not mousemode:
                 match currenttool:
                     case Tools.PENCIL: canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
-                    case x: print(f'unknown tool "{currenttool}"')
+                    case Utils.NO:
+                        if not fill_timer:
+                            OLD_TIME = time.perf_counter()
+                            tool_floodfill(canvas, pixindex[0], pixindex[1], currentpalette[icolor[1]][icolor[0]])
+                            NEW_TIME = time.perf_counter()
+                            logging.debug(f"filling took {int(NEW_TIME - OLD_TIME)} seconds")
+                            fill_timer = 5
+                    case x: logging.warning(f'unknown tool "{currenttool}"')
             
             if event.key == pygame.K_q and not mousemode:
-                icolor = colorpick(canvas[pixindex[0]][pixindex[1]])
+                icolor = tool_colorpick(canvas[pixindex[0]][pixindex[1]])
             
             if event.key == pygame.K_BACKSPACE and not mousemode:
                 canvas[pixindex[0]][pixindex[1]] = (0, 0, 0)
@@ -681,15 +755,24 @@ while game_running:
     if m_left and mousemode and can_use_left == 0:
         match currenttool:
             case Tools.PENCIL: canvas[pixindex[0]][pixindex[1]] = currentpalette[icolor[1]][icolor[0]]
+            case Utils.NO:
+                if not fill_timer:
+                    OLD_TIME = time.perf_counter()
+                    tool_floodfill(canvas, pixindex[0], pixindex[1], currentpalette[icolor[1]][icolor[0]])
+                    NEW_TIME = time.perf_counter()
+                    logging.debug(f"filling took {int(NEW_TIME - OLD_TIME)} seconds")
+                    fill_timer = 5
             case x: print(f'unknown tool "{currenttool}"')
         can_use_left = 2
     
+    #print(pixindex)
+
     if m_right and mousemode and can_use_right == 0:
         canvas[pixindex[0]][pixindex[1]] = 0, 0, 0
         can_use_right = 2
     
     if m_middle and mousemode and can_use_middle == 0:
-        icolor = colorpick(canvas[pixindex[0]][pixindex[1]])
+        icolor = tool_colorpick(canvas[pixindex[0]][pixindex[1]])
         can_use_middle = 2
 
     #showtext(50, 100)
@@ -730,6 +813,7 @@ while game_running:
     
     if cp_timer: draw_cpalette(5, 5, 20)
     if ct_timer: showcurrenttool(5, screenxy[1] - 40)
+    if cs_timer: showcurrentshape(5, screenxy[1] - 85)
 
     #drawrgbhitbox()
 
@@ -739,3 +823,4 @@ while game_running:
     clock.tick(60)
 
     pygame.display.update()
+    #ticks += 1
