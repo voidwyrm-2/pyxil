@@ -9,6 +9,7 @@ screenxy: 768, 768
 startingpixelscale: 6
 canvassize: 16, 16
 startingpalette: pypalette
+output: /Users/[user]/pictures/pixelart
 ```
 
 ## Editor

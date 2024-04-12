@@ -147,6 +147,7 @@ def sicfhelp():
     print('screen size(in format "screenxy: [x], [y]")')
     print('pixel scale factor(in format "pixelscale: [scale]")')
     print('canvas size(in format "screensize: [x], [y]")')
+    print('output folder(in format "output: [path/to/folder]")')
     #print('grid colors(in format "gridcolors: [r], [g], [b]; [r], [g], [b]")')
 
 cli_running = True
@@ -192,7 +193,8 @@ except Exception as e: print(e)
 
 try:
     outputconf = Path(clisettings['output'])
-    if not Path(outputconf).exists(): print(f'palette "{outputconf}" doesn\'t exist, using default instead'); raise KeyError()
+    if not Path(outputconf).exists(): print(f'path "{outputconf}" doesn\'t exist, using default instead'); raise KeyError()
+    if not Path(outputconf).is_dir(): print(f'path "{outputconf}" isn\'t a folder, using default instead'); raise KeyError()
     output = str(outputconf).removesuffix('/').removesuffix('\\')
 except KeyError: print('"output" value not given, using default instead')
 except Exception as e: print(e)
