@@ -6,7 +6,7 @@ Inspired by [picoCAD](https://johanpeitz.itch.io/picocad), [Px Editor](https://d
 * Simple to use interface(barely)
 * Free(although Px Editor is also free and it's actually well made)
 * Open-source, and free to change and edit(refer to Licensing below for more information)
-* better than Aseprite(not really, that's a joke; if you want an ACTUAL art editor of the pixel kind that's high quality, go with Aseprite)
+* Better than Aseprite(not really, that's a joke; if you want an ACTUAL art editor of the pixel kind that's high quality, go with Aseprite)
 * Actively supported by me because passion go brrrrrr(can't wait for that to stop)
 
 ## Controls

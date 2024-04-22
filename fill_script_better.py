@@ -2,6 +2,8 @@
 A fill tool script writen by Chat-GPT 3.5 that's a better version of the other one
 because, again, I really didn't want to make one myself
 I actually didn't need to do anything to this one!
+
+THIS ONE WORKS, DO NOT USE THE OTHER ONE
 '''
 
 def flood_fill(image, start_x, start_y, new_color):

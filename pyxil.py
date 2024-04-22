@@ -5,6 +5,7 @@ import os
 from enum import Enum
 import logging
 import time
+from filedialog import Text_FileDialog
 logging.basicConfig(level=logging.DEBUG)
 
 '''
@@ -244,6 +245,9 @@ def is_inside_rect(rect: tuple[int, int, int, int] | tuple[float, float, float, 
 # initialize game
 pygame.init()
 
+# initialize file dialog
+fileDialog = Text_FileDialog('./', True)
+
 # creating a screen
 
 screen = pygame.display.set_mode(screenxy)  # passing width and height
@@ -451,7 +455,7 @@ def drawborderLs():
     pygame.draw.line(screen, (255, 255, 255), (pixelstart[0] - linewidth, pixelstart[0] - cornerpos), (pixelstart[0] - linewidth, pixelstart[0] + (cornerpos * 2)), linewidth - pixelscale)
 
 
-def showisexporting(x, y):
+def showguidisabled(x, y):
     text = mainfont.render('Please look at the console', not ispixelcode, (255, 255, 255))
     screen.blit(text, (x, y))
 
@@ -496,7 +500,7 @@ whitebackground = False
 
 selectingpalette = False
 
-isexporting = False
+disablegui = False
 
 # timers
 cp_timer = 0 # current palette timer
@@ -517,7 +521,7 @@ def showcurrentshape(x, y):
 
 
 def export(filename_to_export: str):
-    global isexporting
+    global disablegui
     print('initializing image...')
     img = Image.new('RGBA', (len(canvas[0]), len(canvas)))
     print('beginning write')
@@ -540,12 +544,12 @@ def export(filename_to_export: str):
     print(f'saving as "{output + "/" + filename_to_export}"...')
     img.save(output + '/' + filename_to_export)
     print('saved')
-    isexporting = False
+    disablegui = False
     print('exporting complete')
 
 
 def saveas():
-    global isexporting
+    global disablegui
     print('save as?')
     #filecontext = ''#'./'
     #cursor = '> '
@@ -556,7 +560,7 @@ def saveas():
     while True:
         #if filecontext.rsplit('/', 1)[-1]: cursor = filecontext.rsplit('/', 1)[-1] + ' ' + cursor
         inp = input('> ')
-        if inp in ('cancel'): isexporting = False; return
+        if inp in ('cancel'): disablegui = False; return
         elif inp.startswith('save '):
             inp = inp.removeprefix('save ').strip()
             if len(inp.rsplit('.', 1)) == 2 and inp.rsplit('.', 1)[-1] not in ('png', 'jpg'): print('extension is not valid!'); continue
@@ -570,6 +574,22 @@ def saveas():
                         case x: continue
             export(inp)
             break
+
+
+def loadfile(imagefile: str | Path):
+    global canvas
+    newcanvas = {}
+    if not Path(imagefile).exists(): print(f"path '{imagefile}' does not exist"); return
+    img = Image.open(imagefile)
+    imgsize = img.size
+    for y in range(imgsize[1]):
+        for x in range(imgsize[0]):
+            r, g, b, _ = img.getpixel((x, y))
+            try: _ = newcanvas[y]
+            except KeyError: newcanvas[y] = {}
+            newcanvas[y][x] = (r, g, b)
+    canvas = newcanvas
+
 
 
 #ticks = 0
@@ -592,12 +612,7 @@ while game_running:
     if cs_timer > 0: cs_timer -= 1
     if fill_timer > 0: fill_timer -= 1
 
-    if isexporting:
-        clock.tick(60)
-        showisexporting(screenxy[0] - 600, screenxy[1] - 500)
-        pygame.display.update()
-        saveas()
-        continue
+    
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT: game_running = False
@@ -605,8 +620,7 @@ while game_running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE: game_running = False; break
 
-            #if event.key == pygame.K_g and candrawlinegrid: candrawlinegrid = False
-            #elif event.key == pygame.K_g and not candrawlinegrid: candrawlinegrid = True
+            if disablegui: continue
 
             if holding_shift and currenttool == Tools.SHAPETOOL:
                 match event.key:
@@ -620,6 +634,13 @@ while game_running:
                     case pygame.K_2: currenttool = Tools.BUCKET; ct_timer = 35 #; logging.debug(f'current tool switched to "{currenttool}"')
                     case pygame.K_3: currenttool = Tools.LINE; ct_timer = 35 #; logging.debug(f'current tool switched to "{currenttool}"')
                     case pygame.K_4: currenttool = Tools.SHAPETOOL; ct_timer = 35 #; logging.debug(f'current tool switched to "{currenttool}"')
+
+            if event.key == pygame.K_o:
+                showguidisabled(screenxy[0] - 600, screenxy[1] - 500)
+                pygame.display.update()
+                openedfile = fileDialog.run()
+                if openedfile: loadfile(openedfile)
+                pygame.display.update()
 
             if event.key == pygame.K_g and candrawcheckergrid: candrawcheckergrid = False
             elif event.key == pygame.K_g and not candrawcheckergrid: candrawcheckergrid = True
@@ -650,38 +671,8 @@ while game_running:
                 del NEW_CANVAS
                 NEW_TIME = time.perf_counter()
                 logging.debug(f"clearing the canvas took {int(NEW_TIME - OLD_TIME)} seconds")
-
-
-            '''
-            if event.key == pygame.K_UP:
-                if ccolor[icolor] < 255:
-                    add = 5 if holding_shift else 1
-                    if ccolor[icolor] + add > 255: ccolor[icolor] = 255
-                    else: ccolor[icolor] += add
-                else: ccolor[icolor] = 255
-
-            if event.key == pygame.K_DOWN:
-                if ccolor[icolor] > 0:
-                    sub = 5 if holding_shift else 1
-                    if ccolor[icolor] - sub < 0: ccolor[icolor] = 0
-                    else: ccolor[icolor] -= sub
-                else: ccolor[icolor] = 0
             
-            if event.key == pygame.K_RIGHT:
-                if ccolor[icolor] < 255:
-                    add = 50 if holding_shift else 10
-                    if ccolor[icolor] + add > 255: ccolor[icolor] = 255
-                    else: ccolor[icolor] += add
-                else: ccolor[icolor] = 255
-
-            if event.key == pygame.K_LEFT:
-                if ccolor[icolor] > 0:
-                    sub = 50 if holding_shift else 10
-                    if ccolor[icolor] - sub < 0: ccolor[icolor] = 0
-                    else: ccolor[icolor] -= sub
-                else: ccolor[icolor] = 0
-            '''
-            
+            # BEGIN COLOR SWITCHING CONTROLS
             if event.key == pygame.K_RIGHT:
                 icolor[0] = clamp(icolor[0] + 1, 0, len(currentpalette[icolor[1]]) - 1); cp_timer = 35
                 
@@ -693,7 +684,9 @@ while game_running:
 
             if event.key == pygame.K_DOWN:
                 icolor[1] = clamp(icolor[1] + 1, 0, len(currentpalette) - 1); cp_timer = 35
-        
+            # END COLOR SWITCHING CONTROLS
+
+            # BEGIN KEYBOARD MODE CONTROLS
             if event.key == pygame.K_w and not mousemode:
                 if pixindex[0] > 0: pixindex[0] -= 1
             
@@ -723,20 +716,14 @@ while game_running:
             
             if event.key == pygame.K_BACKSPACE and not mousemode:
                 canvas[pixindex[0]][pixindex[1]] = (0, 0, 0)
+            # END KEYBOARD MODE CONTROLS
             
-            if event.key == pygame.K_s and holding_control: isexporting = True
+            if event.key == pygame.K_s and holding_control: disablegui = True
 
             #if event.key == pygame.K_COMMA: pixelstart += 1#shift_by_one_left()
             #if event.key == pygame.K_PERIOD: pixelstart -= 1#shift_by_one_right()
         
         if event.type == pygame.MOUSEWHEEL and mousemode:
-            '''if (is_inside_rect((4, 10, 38, 20), mouse_x, mouse_y) or
-                is_inside_rect((49, 10, 38, 20), mouse_x, mouse_y) or
-                is_inside_rect((94, 10, 38, 20), mouse_x, mouse_y)):
-                if ccolor[icolor] - event.dict['y'] <= 0: ccolor[icolor] = 0
-                elif ccolor[icolor] - event.dict['y'] >= 255: ccolor[icolor] = 255
-                else: ccolor[icolor] -= event.dict['y']
-            else:'''
             if holding_shift:
                 pixelstart[0] -= event.dict['x']
             elif holding_control:
@@ -749,6 +736,15 @@ while game_running:
             if event.key in (pygame.K_LSHIFT, pygame.K_RSHIFT): holding_shift = False
             if event.key in (pygame.K_LCTRL, pygame.K_RCTRL): holding_control = False
     
+
+    if disablegui:
+        clock.tick(60)
+        showguidisabled(screenxy[0] - 600, screenxy[1] - 500)
+        pygame.display.update()
+        saveas()
+        continue
+
+
     mouse_x, mouse_y = pygame.mouse.get_pos()
     m_left, m_middle, m_right = pygame.mouse.get_pressed()
 
@@ -764,8 +760,6 @@ while game_running:
                     fill_timer = 5
             case x: print(f'unknown tool "{currenttool}"')
         can_use_left = 2
-    
-    #print(pixindex)
 
     if m_right and mousemode and can_use_right == 0:
         canvas[pixindex[0]][pixindex[1]] = 0, 0, 0

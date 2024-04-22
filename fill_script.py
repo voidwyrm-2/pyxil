@@ -2,6 +2,8 @@
 A fill tool script writen by Chat-GPT 3.5
 because I really didn't want to make one myself
 I've had to fix some things, but otherwise it's the same as the one ChatGPT made
+
+THIS DOES NOT WORK WELL(OR AT ALL), USE THE OTHER ONE
 '''
 
 def fill(image, x, y, target_color, fill_color):

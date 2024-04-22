@@ -30,6 +30,7 @@ output: /Users/[user]/pictures/pixelart
     * hold Left or Right Shift to shift it by 50, instead-->
 * B: switch between the white and black background(defaults to black)
 * Up/Down/Left/Right Arrows: switch the selected color from the current palette
+* O: open an image file
 * P: open the palette selection screen(not yet implemented)
 * Backspace: set the current pixel to black
 * Control + S: export what you currently have on the canvas as a .png or a .jpg
